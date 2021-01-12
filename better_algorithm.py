@@ -91,74 +91,45 @@ roads.append(000)
 for i in range (1,201):
     roads.append([0,i,0])
 
-'''
+minimum = 100.0
+for w in range(2400,2500):
+    for k in range(0,len(sort_dict)):
+    
+        for i in range(1,201):
+            if nodes[k][0] in roads[i]:
+                pos1 = i
+            if nodes[k][1] in roads[i]:
+                pos2 = i
 
-for i in range(1,201):
-    if nodes[0][0] in roads[i]:
-        pos1 = i
-print(pos1)
-
-for i in range(1,201):
-    if nodes[0][1] in roads[i]:
-        pos2 = i
-print(pos2)
-
-if(len(roads[pos1])<len(roads[pos2])):
-    pos1,pos2 = pos2,pos1
-
-if(pos1!=pos2):
-    if((roads[pos1][1] == nodes[0][0] or roads[pos1][len(roads[pos1])-2] == nodes[0][0]) and (roads[pos2][1] == nodes[0][1] or roads[pos2][len(roads[pos2])-2] == nodes[0][1])):
-        sum1 = 0
-        sum2 = 0
-        for i in range(1,len(roads[pos1])-1):
-            sum1 += all_nodes[roads[pos1][i]].demand
-        for i in range(1,len(roads[pos2])-1):
-            sum2 += all_nodes[roads[pos2][i]].demand
-        if((sum1 + sum2) <= 3000):
-            roads[pos1].insert(len(roads[pos1])-1,nodes[0][1]) #προσθετω στην πρωτη διαδρομη την δευτερη διαδρομη
-            roads[pos2]=[0]  # σβηνω τη διαδρομη που εχω προσθεσει
-'''
-
-for k in range(0,len(sort_dict)):
-
+        if(pos1!=pos2):
+            if((roads[pos1][1] == nodes[k][0] or roads[pos1][len(roads[pos1])-2] == nodes[k][0]) and (roads[pos2][1] == nodes[k][1] or roads[pos2][len(roads[pos2])-2] == nodes[k][1])):
+                n0 = nodes[k][0]
+                n1 = nodes[k][1]
+                if(len(roads[pos1])<len(roads[pos2])):
+                    pos1,pos2 = pos2,pos1
+                    n0,n1=n1,n0
+                sum1 = 0
+                sum2 = 0
+                for i in range(1,len(roads[pos1])-1):
+                    sum1 += all_nodes[roads[pos1][i]].demand
+                for i in range(1,len(roads[pos2])-1):
+                    sum2 += all_nodes[roads[pos2][i]].demand
+                if((sum1 + sum2) <= w):
+                    roads[pos1].insert(len(roads[pos1])-1,n1) #προσθετω στην πρωτη διαδρομη την δευτερη διαδρομη
+                    roads[pos2]=[0,0,0]  # σβηνω τη διαδρομη που εχω προσθεσει
+    count = 0
+    mymax=-1
     for i in range(1,201):
-        if nodes[k][0] in roads[i]:
-            pos1 = i
-        if nodes[k][1] in roads[i]:
-            pos2 = i
-
-    if(pos1!=pos2):
-        if((roads[pos1][1] == nodes[k][0] or roads[pos1][len(roads[pos1])-2] == nodes[k][0]) and (roads[pos2][1] == nodes[k][1] or roads[pos2][len(roads[pos2])-2] == nodes[k][1])):
-            n0 = nodes[k][0]
-            n1 = nodes[k][1]
-            if(len(roads[pos1])<len(roads[pos2])):
-                pos1,pos2 = pos2,pos1
-                n0,n1=n1,n0
-            sum1 = 0
-            sum2 = 0
-            for i in range(1,len(roads[pos1])-1):
-                sum1 += all_nodes[roads[pos1][i]].demand
-            for i in range(1,len(roads[pos2])-1):
-                sum2 += all_nodes[roads[pos2][i]].demand
-            if((sum1 + sum2) <= 3000):
-                roads[pos1].insert(len(roads[pos1])-1,n1) #προσθετω στην πρωτη διαδρομη την δευτερη διαδρομη
-                roads[pos2]=[0,0,0]  # σβηνω τη διαδρομη που εχω προσθεσει
-count = 0
-mymax=-1
-for i in range(1,201):
-    if(roads[i]!=[0,0,0]):
-        count+=1
-        #print(roads[i])
-        time_sum=0
-        for j in range(0,len(roads[i])-2):
-            time_sum+=time_matrix[roads[i][j]][roads[i][j+1]]
-        print(time_sum)
-        if(mymax<time_sum):
-            mymax=time_sum
-
-print(count)
-print(mymax)
-
-
-
-
+        if(roads[i]!=[0,0,0]):
+            count+=1
+            
+            time_sum=0
+            for j in range(0,len(roads[i])-2):
+                time_sum+=time_matrix[roads[i][j]][roads[i][j+1]]
+            if(mymax<time_sum):
+                mymax=time_sum
+    if(minimum>mymax):
+        minimum=mymax
+    print(w)
+print(minimum)
+    
