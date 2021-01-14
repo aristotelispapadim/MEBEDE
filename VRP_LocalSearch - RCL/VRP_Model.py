@@ -5,12 +5,11 @@ import math
 class Model:
 
 # instance variables
-    def __init__(self, id, tp, dem, xx, yy):
-        self.id = id
-        self.type = tp
-        self.demand = dem
-        self.x = xx
-        self.y = yy
+    def __init__(self):
+        self.allNodes = []
+        self.customers = []
+        self.matrix = []
+        self.capacity = -1
 
     def BuildModel(self):
         random.seed(1)
@@ -41,11 +40,12 @@ class Model:
 
 
 class Node:
-    def __init__(self, idd, xx, yy, dem):
+    def __init__(self, id, tp, dem, xx, yy):
+        self.id = id
+        self.type = tp
+        self.demand = dem
         self.x = xx
         self.y = yy
-        self.ID = idd
-        self.demand = dem
         self.isRouted = False
 
 class Route:
