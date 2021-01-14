@@ -92,7 +92,7 @@ for i in range (1,201):
     roads.append([0,i,0])
 
 minimum = 100.0
-for w in range(2400,2500):
+for w in range(2400,2499):
     for k in range(0,len(sort_dict)):
     
         for i in range(1,201):
