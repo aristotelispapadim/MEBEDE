@@ -1,34 +1,10 @@
 from VRP_Model import *
-#from SolutionDrawer import *
+from SolutionDrawer import *
 
 class Solution:
     def __init__(self):
-        self.cost = 8.807142857142859
-        self.routes = [[0, 3, 143, 126, 31, 193, 0],
-        [0, 21, 77, 40, 153, 64, 14, 157, 0],
-        [0, 30, 113, 118, 110, 144, 66, 130, 0],
-        [0, 33, 87, 184, 189, 2, 22, 49, 9, 150, 59, 0],
-        [0, 38, 86, 101, 52, 88, 166, 171, 114, 18, 0],
-        [0, 39, 197, 84, 5, 67, 161, 155, 116, 0],
-        [0, 46, 74, 176, 45, 167, 12, 91, 0],
-        [0, 48, 164, 145, 15, 85, 127, 159, 187, 0],
-        [0, 55, 131, 43, 111, 16, 8, 198, 132, 65, 44, 177, 0],
-        [0, 57, 90, 100, 82, 178, 140, 99, 0],
-        [0, 63, 125, 183, 73, 135, 51, 25, 0],
-        [0, 68, 199, 62, 105, 95, 23, 7, 96, 0],
-        [0, 69, 141, 117, 106, 80, 139, 154, 0],
-        [0, 76, 190, 152, 119, 41, 138, 98, 147, 0],
-        [0, 78, 107, 181, 148, 103, 13, 56, 0],
-        [0, 79, 158, 10, 1, 160, 196, 29, 61, 0],
-        [0, 89, 128, 121, 156, 173, 71, 108, 0],
-        [0, 92, 185, 50, 70, 109, 20, 0],
-        [0, 102, 168, 122, 54, 97, 42, 47, 0],
-        [0, 123, 179, 34, 182, 149, 28, 142, 188, 0],
-        [0, 133, 134, 17, 37, 19, 0],
-        [0, 137, 169, 192, 72, 136, 4, 26, 35, 0],
-        [0, 151, 163, 186, 58, 115, 0],
-        [0, 174, 180, 75, 0],
-        [0, 191, 200, 32, 112, 194, 27, 0]]
+        self.cost = 0.0
+        self.routes = []
 
 class RelocationMove(object):
     def __init__(self):
@@ -113,7 +89,7 @@ class Solver:
         self.rcl_size = 3
 
     def solve(self):
-        for i in range(20):
+        for i in range(25):
             self.SetRoutedFlagToFalseForAllCustomers()
             self.ApplyNearestNeighborMethod(i)
             cc = self.sol.cost
@@ -128,7 +104,7 @@ class Solver:
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
-        SolDrawer.draw(10000, self.sol, self.allNodes)
+        #SolDrawer.draw(10000, self.sol, self.allNodes)
         return self.sol
 
     def SetRoutedFlagToFalseForAllCustomers(self):
