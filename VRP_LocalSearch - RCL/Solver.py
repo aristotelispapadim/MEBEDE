@@ -30,7 +30,6 @@ class Solution:
         [0, 174, 180, 75, 0],
         [0, 191, 200, 32, 112, 194, 27, 0]]
 
-
 class RelocationMove(object):
     def __init__(self):
         self.originRoutePosition = None
@@ -110,32 +109,42 @@ class Solver:
         self.capacity = m.capacity
         self.sol = None
         self.bestSolution = None
-        self.searchTrajectory = []
+        self.overallBestSol = None
+        self.rcl_size = 3
 
     def solve(self):
-        self.SetRoutedFlagToFalseForAllCustomers()
-        #self.ApplyNearestNeighborMethod()
-        self.MinimumInsertions()
+        for i in range(20):
+            self.SetRoutedFlagToFalseForAllCustomers()
+            self.ApplyNearestNeighborMethod(i)
+            cc = self.sol.cost
+            print(i, 'Constr:', self.sol.cost)
+            # self.MinimumInsertions(i)
+            # self.ReportSolution(self.sol)
+            self.LocalSearch(0)
+            if self.overallBestSol == None or self.overallBestSol.cost > self.sol.cost:
+                self.overallBestSol = self.cloneSolution(self.sol)
+            print(i, 'Const: ', cc, ' LS:', self.sol.cost, 'BestOverall: ', self.overallBestSol.cost)
+            SolDrawer.draw(i, self.sol, self.allNodes)
+
+        self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
-        self.VND()
-        self.ReportSolution(self.sol)
+        SolDrawer.draw(10000, self.sol, self.allNodes)
         return self.sol
 
     def SetRoutedFlagToFalseForAllCustomers(self):
         for i in range(0, len(self.customers)):
             self.customers[i].isRouted = False
 
-    def ApplyNearestNeighborMethod(self):
+    def ApplyNearestNeighborMethod(self, itr = 0):
         modelIsFeasible = True
         self.sol = Solution()
         insertions = 0
-
         while (insertions < len(self.customers)):
             bestInsertion = CustomerInsertion()
             lastOpenRoute: Route = self.GetLastOpenRoute()
 
             if lastOpenRoute is not None:
-                self.IdentifyBestInsertion(bestInsertion, lastOpenRoute)
+                self.IdentifyBest_NN_ofLastVisited(bestInsertion, lastOpenRoute, itr)
 
             if (bestInsertion.customer is not None):
                 self.ApplyCustomerInsertion(bestInsertion)
@@ -153,7 +162,7 @@ class Solver:
             print('FeasibilityIssue')
             #reportSolution
 
-    def MinimumInsertions(self):
+    def MinimumInsertions(self, itr = 0):
         modelIsFeasible = True
         self.sol = Solution()
         insertions = 0
@@ -163,7 +172,7 @@ class Solver:
             lastOpenRoute: Route = self.GetLastOpenRoute()
 
             if lastOpenRoute is not None:
-                self.IdentifyBestInsertionAllPositions(bestInsertion, lastOpenRoute)
+                self.IdentifyBestInsertionAllPositions(bestInsertion, lastOpenRoute, itr)
 
             if (bestInsertion.customer is not None):
                 self.ApplyCustomerInsertionAllPositions(bestInsertion)
@@ -196,7 +205,7 @@ class Solver:
         while terminationCondition is False:
 
             self.InitializeOperators(rm, sm, top)
-            SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
+            # SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
 
             # Relocations
             if operator == 0:
@@ -231,66 +240,6 @@ class Solver:
 
         self.sol = self.bestSolution
 
-    def VND(self):
-        self.bestSolution = self.cloneSolution(self.sol)
-        VNDIterator = 0
-        kmax = 2
-        rm = RelocationMove()
-        sm = SwapMove()
-        top = TwoOptMove()
-        k = 0
-        draw = True
-
-        while k <= kmax:
-            self.InitializeOperators(rm, sm, top)
-            if k == 1:
-                self.FindBestRelocationMove(rm)
-                if rm.originRoutePosition is not None and rm.moveCost < 0:
-                    self.ApplyRelocationMove(rm)
-                    if draw:
-                        SolDrawer.draw(VNDIterator, self.sol, self.allNodes)
-                    VNDIterator = VNDIterator + 1
-                    self.searchTrajectory.append(self.sol.cost)
-                    k = 0
-                else:
-                    k += 1
-            elif k == 2:
-                self.FindBestSwapMove(sm)
-                if sm.positionOfFirstRoute is not None and sm.moveCost < 0:
-                    self.ApplySwapMove(sm)
-                    if draw:
-                        SolDrawer.draw(VNDIterator, self.sol, self.allNodes)
-                    VNDIterator = VNDIterator + 1
-                    self.searchTrajectory.append(self.sol.cost)
-                    k = 0
-                else:
-                    k += 1
-            elif k == 0:
-                self.FindBestTwoOptMove(top)
-                if top.positionOfFirstRoute is not None and top.moveCost < 0:
-                    self.ApplyTwoOptMove(top)
-                    if draw:
-                        SolDrawer.draw(VNDIterator, self.sol, self.allNodes)
-                    VNDIterator = VNDIterator + 1
-                    self.searchTrajectory.append(self.sol.cost)
-                    k = 0
-                else:
-                    k += 1
-
-            if (self.sol.cost < self.bestSolution.cost):
-                self.bestSolution = self.cloneSolution(self.sol)
-
-        SolDrawer.drawTrajectory(self.searchTrajectory)
-
-
-
-    def ApplyMove(self, moveStructure):
-        if isinstance(moveStructure, RelocationMove):
-            self.ApplyRelocationMove(moveStructure)
-        elif isinstance(moveStructure, SwapMove):
-            self.ApplySwapMove(moveStructure)
-        elif isinstance(moveStructure, TwoOptMove):
-            self.ApplyTwoOptMove(moveStructure)
 
     def cloneRoute(self, rt:Route):
         cloned = Route(self.depot, self.capacity)
@@ -338,10 +287,8 @@ class Solver:
 
                         moveCost = costAdded - costRemoved
 
-                        if (moveCost < rm.moveCost) and abs(moveCost) > 0.0001:
+                        if (moveCost < rm.moveCost):
                             self.StoreBestRelocationMove(originRouteIndex, targetRouteIndex, originNodeIndex, targetNodeIndex, moveCost, originRtCostChange, targetRtCostChange, rm)
-
-        return rm.originRoutePosition
 
     def FindBestSwapMove(self, sm):
         for firstRouteIndex in range(0, len(self.sol.routes)):
@@ -393,7 +340,7 @@ class Solver:
                             costChangeSecondRoute = costAdded2 - costRemoved2
 
                             moveCost = costAdded1 + costAdded2 - (costRemoved1 + costRemoved2)
-                        if moveCost < sm.moveCost and abs(moveCost) > 0.0001:
+                        if moveCost < sm.moveCost:
                             self.StoreBestSwapMove(firstRouteIndex, secondRouteIndex, firstNodeIndex, secondNodeIndex, moveCost, costChangeFirstRoute, costChangeSecondRoute, sm)
 
     def ApplyRelocationMove(self, rm: RelocationMove):
@@ -423,7 +370,10 @@ class Solver:
 
         self.sol.cost += rm.moveCost
 
-        self.TestSolution()
+        newCost = self.CalculateTotalCost(self.sol)
+        #debuggingOnly
+        if abs((newCost - oldCost) - rm.moveCost) > 0.0001:
+            print('Cost Issue')
 
 
     def ApplySwapMove(self, sm):
@@ -444,7 +394,11 @@ class Solver:
            rt2.load = rt2.load + b1.demand - b2.demand
 
        self.sol.cost += sm.moveCost
-       self.TestSolution()
+
+       newCost = self.CalculateTotalCost(self.sol)
+       # debuggingOnly
+       if abs((newCost - oldCost) - sm.moveCost) > 0.0001:
+           print('Cost Issue')
 
     def ReportSolution(self, sol):
         for i in range(0, len(sol.routes)):
@@ -460,17 +414,33 @@ class Solver:
         else:
             return self.sol.routes[-1]
 
-    def IdentifyBestInsertion(self, bestInsertion, rt):
+    def IdentifyBest_NN_ofLastVisited(self, bestInsertion, rt, itr = 0):
+        random.seed(itr)
+        rcl = []
         for i in range(0, len(self.customers)):
             candidateCust:Node = self.customers[i]
             if candidateCust.isRouted is False:
                 if rt.load + candidateCust.demand <= rt.capacity:
                     lastNodePresentInTheRoute = rt.sequenceOfNodes[-2]
                     trialCost = self.distanceMatrix[lastNodePresentInTheRoute.ID][candidateCust.ID]
-                    if trialCost < bestInsertion.cost:
-                        bestInsertion.customer = candidateCust
-                        bestInsertion.route = rt
-                        bestInsertion.cost = trialCost
+                    # Update rcl list
+                    if len(rcl) < self.rcl_size:
+                        new_tup = (trialCost, candidateCust, rt)
+                        rcl.append(new_tup)
+                        rcl.sort(key=lambda x: x[0])
+                    elif trialCost < rcl[-1][0]:
+                        rcl.pop(len(rcl) - 1)
+                        new_tup = (trialCost, candidateCust, rt)
+                        rcl.append(new_tup)
+                        rcl.sort(key=lambda x: x[0])
+        if len(rcl) > 0:
+            tup_index = random.randint(0, len(rcl) - 1)
+            tpl = rcl[tup_index]
+            bestInsertion.cost = tpl[0]
+            bestInsertion.customer = tpl[1]
+            bestInsertion.route = tpl[2]
+
+
 
     def ApplyCustomerInsertion(self, insertion):
         insCustomer = insertion.customer
@@ -556,10 +526,8 @@ class Solver:
 
                             if self.CapacityIsViolated(rt1, nodeInd1, rt2, nodeInd2):
                                 continue
-                            costAdded = self.distanceMatrix[A.ID][L.ID] + self.distanceMatrix[B.ID][K.ID]
-                            costRemoved = self.distanceMatrix[A.ID][B.ID] + self.distanceMatrix[K.ID][L.ID]
-                            moveCost = costAdded - costRemoved
-                        if moveCost < top.moveCost and abs(moveCost) > 0.0001:
+
+                        if moveCost < top.moveCost:
                             self.StoreBestTwoOptMove(rtInd1, rtInd2, nodeInd1, nodeInd2, moveCost, top)
 
 
@@ -624,7 +592,6 @@ class Solver:
             self.UpdateRouteCostAndLoad(rt2)
 
         self.sol.cost += top.moveCost
-        self.TestSolution()
 
     def UpdateRouteCostAndLoad(self, rt: Route):
         tc = 0
@@ -658,12 +625,13 @@ class Solver:
         if abs(totalSolCost - self.sol.cost) > 0.0001:
             print('Solution Cost problem')
 
-    def IdentifyBestInsertionAllPositions(self, bestInsertion, rt):
+    def IdentifyBestInsertionAllPositions(self, bestInsertion, rt, itr = 0):
+        random.seed(itr)
+        rcl = []
         for i in range(0, len(self.customers)):
             candidateCust: Node = self.customers[i]
             if candidateCust.isRouted is False:
                 if rt.load + candidateCust.demand <= rt.capacity:
-                    lastNodePresentInTheRoute = rt.sequenceOfNodes[-2]
                     for j in range(0, len(rt.sequenceOfNodes) - 1):
                         A = rt.sequenceOfNodes[j]
                         B = rt.sequenceOfNodes[j + 1]
@@ -671,11 +639,21 @@ class Solver:
                         costRemoved = self.distanceMatrix[A.ID][B.ID]
                         trialCost = costAdded - costRemoved
 
-                        if trialCost < bestInsertion.cost:
-                            bestInsertion.customer = candidateCust
-                            bestInsertion.route = rt
-                            bestInsertion.cost = trialCost
-                            bestInsertion.insertionPosition = j
+                        if len(rcl) < self.rcl_size:
+                            new_tup = (trialCost, candidateCust, rt, j)
+                            rcl.append(new_tup)
+                            rcl.sort(key=lambda x: x[0])
+                        elif trialCost < rcl[-1][0]:
+                            rcl.pop(len(rcl) - 1)
+                            new_tup = (trialCost, candidateCust, rt, j)
+                            rcl.append(new_tup)
+                            rcl.sort(key=lambda x: x[0])
+        tup_index = random.randint(0, len(self.rcl) - 1)
+        tpl = rcl[tup_index]
+        bestInsertion.cost = tpl[0]
+        bestInsertion.customer = tpl[1]
+        bestInsertion.route = tpl[2]
+        bestInsertion.insertionPosition = tpl[3]
 
     def ApplyCustomerInsertionAllPositions(self, insertion):
         insCustomer = insertion.customer
@@ -687,3 +665,4 @@ class Solver:
         self.sol.cost += insertion.cost
         rt.load += insCustomer.demand
         insCustomer.isRouted = True
+
