@@ -41,7 +41,7 @@ class Model:
 
 class Node:
     def __init__(self, id, tp, dem, xx, yy):
-        self.id = id
+        self.ID = id
         self.type = tp
         self.demand = dem
         self.x = xx
