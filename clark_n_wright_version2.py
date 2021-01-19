@@ -39,6 +39,8 @@ for i in range(0, len(all_nodes)):
 
 
 
+
+
 time_matrix = [[0.0 for j in range(0, len(all_nodes))] for k in range(0, len(all_nodes))]
 for i in range(0, len(all_nodes)):
     for j in range(0, len(all_nodes)):
@@ -48,6 +50,8 @@ for i in range(0, len(all_nodes)):
             #χρονος μεγαλυτερος του 0
             time = 0
         time_matrix[i][j] = time
+
+
 
 savings = [[0.0 for j in range(0, len(all_nodes))] for k in range(0, len(all_nodes))]
 for i in range(1, len(all_nodes)):
@@ -104,7 +108,7 @@ mymax=-1
 for i in range(1,201):
     if(roads[i]!=[0,0,0]):
         count+=1
-        print(roads[i])
+        # print(roads[i])
         time_sum=0
         for j in range(0,len(roads[i])-2):
             if(all_nodes[roads[i][j+1]].type == 1):
@@ -120,7 +124,7 @@ for i in range(1,201):
             mymax=time_sum
 
 #print(count)
-print(mymax)
+# print(mymax)
 
 '''
 mylist = [[0,1,50,65,101,130,150,165,183],

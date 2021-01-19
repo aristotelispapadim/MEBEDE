@@ -89,8 +89,13 @@ class Solver:
         self.rcl_size = 3
 
     def solve(self):
+<<<<<<< Updated upstream
         for i in range(3):
             self.SetRoutedFlagToFalseForAllCustomers()
+=======
+        for i in range(5):
+            # self.SetRoutedFlagToFalseForAllCustomers()
+>>>>>>> Stashed changes
             self.ApplyNearestNeighborMethod(i)
             cc = self.sol.cost
             print(i, 'Constr:', self.sol.cost)
@@ -377,13 +382,36 @@ class Solver:
            print('Cost Issue')
 
     def ReportSolution(self, sol):
+        count = 0
         for i in range(0, len(sol.routes)):
             rt = sol.routes[i]
+<<<<<<< Updated upstream
             print(rt)
             #for j in range (0, len(rt.sequenceOfNodes)):
                 #print(rt.sequenceOfNodes[j].ID, end=',')
             print(rt.cost)
         print (self.sol.cost)
+=======
+            cost = 0
+            count += 1
+            for j in range (0, len(rt.sequenceOfNodes)):
+                print(rt.sequenceOfNodes[j].ID, end=' ')
+                if (j < len(rt.sequenceOfNodes)-2):
+                    a = rt.sequenceOfNodes[j]
+                    b = rt.sequenceOfNodes[j + 1]
+                    if (b.type == 1):
+                        time_out = (5/60)
+                    elif (b.type == 2):
+                        time_out = (15/60)
+                    elif (b.type == 3):
+                        time_out = (25/60)
+                    cost += time_out
+                    cost += self.distanceMatrix[a.ID][b.ID]
+            print(cost)
+        print(count)    
+            # print(rt.cost)
+        # print (self.sol.cost)
+>>>>>>> Stashed changes
 
     def GetLastOpenRoute(self):
         if len(self.sol.routes) == 0:
@@ -463,7 +491,8 @@ class Solver:
             for j in range (0, len(rt.sequenceOfNodes) - 1):
                 a = rt.sequenceOfNodes[j]
                 b = rt.sequenceOfNodes[j + 1]
-                c += self.distanceMatrix[a.ID][b.ID]
+                c += self.distanceMatrix[a.ID][b.ID] 
+                # + time_out
         return c
 
     def InitializeOperators(self, rm, sm, top):

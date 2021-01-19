@@ -15,7 +15,7 @@ class Model:
         random.seed(1)
         depot = Node(0, 0, 0, 50, 50)
         self.allNodes.append(depot)
-        self.capacity = 3000
+        self.capacity = 2700
         totalCustomers = 200
         for i in range (0, totalCustomers):
             id = i + 1
@@ -34,7 +34,7 @@ class Model:
             for j in range(0, rows):
                 a = self.allNodes[i]
                 b = self.allNodes[j]
-                time = (math.sqrt(math.pow(a.x - b.x, 2) + math.pow(a.y - b.y, 2)))/35
+                time = round((math.sqrt(math.pow(a.x - b.x, 2) + math.pow(a.y - b.y, 2))))/35
                 self.matrix[i][j] = time
 
 
