@@ -89,13 +89,8 @@ class Solver:
         self.rcl_size = 3
 
     def solve(self):
-<<<<<<< Updated upstream
         for i in range(3):
             self.SetRoutedFlagToFalseForAllCustomers()
-=======
-        for i in range(5):
-            # self.SetRoutedFlagToFalseForAllCustomers()
->>>>>>> Stashed changes
             self.ApplyNearestNeighborMethod(i)
             cc = self.sol.cost
             print(i, 'Constr:', self.sol.cost)
@@ -385,15 +380,8 @@ class Solver:
         count = 0
         for i in range(0, len(sol.routes)):
             rt = sol.routes[i]
-<<<<<<< Updated upstream
             print(rt)
-            #for j in range (0, len(rt.sequenceOfNodes)):
-                #print(rt.sequenceOfNodes[j].ID, end=',')
-            print(rt.cost)
-        print (self.sol.cost)
-=======
             cost = 0
-            count += 1
             for j in range (0, len(rt.sequenceOfNodes)):
                 print(rt.sequenceOfNodes[j].ID, end=' ')
                 if (j < len(rt.sequenceOfNodes)-2):
@@ -411,7 +399,6 @@ class Solver:
         print(count)    
             # print(rt.cost)
         # print (self.sol.cost)
->>>>>>> Stashed changes
 
     def GetLastOpenRoute(self):
         if len(self.sol.routes) == 0:
