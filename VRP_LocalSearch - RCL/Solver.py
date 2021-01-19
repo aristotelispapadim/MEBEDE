@@ -89,7 +89,7 @@ class Solver:
         self.rcl_size = 3
 
     def solve(self):
-        for i in range(25):
+        for i in range(3):
             self.SetRoutedFlagToFalseForAllCustomers()
             self.ApplyNearestNeighborMethod(i)
             cc = self.sol.cost
@@ -379,8 +379,9 @@ class Solver:
     def ReportSolution(self, sol):
         for i in range(0, len(sol.routes)):
             rt = sol.routes[i]
-            for j in range (0, len(rt.sequenceOfNodes)):
-                print(rt.sequenceOfNodes[j].ID, end=' ')
+            print(rt)
+            #for j in range (0, len(rt.sequenceOfNodes)):
+                #print(rt.sequenceOfNodes[j].ID, end=',')
             print(rt.cost)
         print (self.sol.cost)
 
