@@ -1,5 +1,5 @@
 from VRP_Model import *
-from SolutionDrawer import *
+#from SolutionDrawer import *
 
 class Solution:
     def __init__(self):
@@ -100,7 +100,7 @@ class Solver:
             if self.overallBestSol == None or self.overallBestSol.cost > self.sol.cost:
                 self.overallBestSol = self.cloneSolution(self.sol)
             print(i, 'Const: ', cc, ' LS:', self.sol.cost, 'BestOverall: ', self.overallBestSol.cost)
-            SolDrawer.draw(i, self.sol, self.allNodes)
+            #SolDrawer.draw(i, self.sol, self.allNodes)
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
