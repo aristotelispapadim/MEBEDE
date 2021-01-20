@@ -64,13 +64,14 @@ class Solver:
 [0, 151, 163, 186, 58, 115, 0],
 [0, 174, 180, 75, 0],
 [0, 191, 200, 32, 112, 194, 27, 0]]
-        max = -1
+        max1 = -1
         for i in range(0, len(self.sol.routes)):
-           routecost = FindRouteCost(self.sol.routes[i])
-           if (routecost > max):
-               max = routecost
-            r = Route()
-        self.sol.maximum = max       
+            routecost = FindRouteCost(self.sol.routes[i])
+            if (routecost > max1):
+                max1 = routecost
+            r = Route(0, 3000)
+
+        self.sol.maximum = max1       
         for i in range(25): 
             cc = self.sol.maximum
             print(i, 'Constr:', self.sol.cost)
@@ -257,3 +258,5 @@ class Solver:
 
         if abs(totalSolCost - self.sol.cost) > 0.0001:
             print('Solution Cost problem')
+
+    

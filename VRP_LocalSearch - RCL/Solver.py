@@ -89,18 +89,18 @@ class Solver:
         self.rcl_size = 3
 
     def solve(self):
-        for i in range(3):
-            self.SetRoutedFlagToFalseForAllCustomers()
-            self.ApplyNearestNeighborMethod(i)
-            cc = self.sol.cost
-            print(i, 'Constr:', self.sol.cost)
-            # self.MinimumInsertions(i)
-            # self.ReportSolution(self.sol)
-            self.LocalSearch(0)
-            if self.overallBestSol == None or self.overallBestSol.cost > self.sol.cost:
-                self.overallBestSol = self.cloneSolution(self.sol)
-            print(i, 'Const: ', cc, ' LS:', self.sol.cost, 'BestOverall: ', self.overallBestSol.cost)
-            #SolDrawer.draw(i, self.sol, self.allNodes)
+        #for i in range(3):
+        self.SetRoutedFlagToFalseForAllCustomers()
+        self.ApplyNearestNeighborMethod(104)
+        cc = self.sol.cost
+        print(104, 'Constr:', self.sol.cost)
+        # self.MinimumInsertions(i)
+        # self.ReportSolution(self.sol)
+        self.LocalSearch(0)
+        if self.overallBestSol == None or self.overallBestSol.cost > self.sol.cost:
+            self.overallBestSol = self.cloneSolution(self.sol)
+        print(104, 'Const: ', cc, ' LS:', self.sol.cost, 'BestOverall: ', self.overallBestSol.cost)
+        #SolDrawer.draw(i, self.sol, self.allNodes)
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
@@ -111,7 +111,7 @@ class Solver:
         for i in range(0, len(self.customers)):
             self.customers[i].isRouted = False
 
-    def ApplyNearestNeighborMethod(self, itr = 0):
+    def ApplyNearestNeighborMethod(self, itr):
         modelIsFeasible = True
         self.sol = Solution()
         insertions = 0
@@ -380,7 +380,6 @@ class Solver:
         count = 0
         for i in range(0, len(sol.routes)):
             rt = sol.routes[i]
-            print(rt)
             cost = 0
             for j in range (0, len(rt.sequenceOfNodes)):
                 print(rt.sequenceOfNodes[j].ID, end=' ')
@@ -406,7 +405,7 @@ class Solver:
         else:
             return self.sol.routes[-1]
 
-    def IdentifyBest_NN_ofLastVisited(self, bestInsertion, rt, itr = 0):
+    def IdentifyBest_NN_ofLastVisited(self, bestInsertion, rt, itr):
         random.seed(itr)
         rcl = []
         for i in range(0, len(self.customers)):

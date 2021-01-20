@@ -72,7 +72,6 @@ for i in range(0,len(sort_dict)):
     nodes.append(list(sort_dict)[i][0])
 
 
-
 roads = []
 roads.append(000)
 for i in range (1,201):
