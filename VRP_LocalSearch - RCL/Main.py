@@ -1,5 +1,5 @@
 from VRP_Model import Model
-from Solver import *
+from Solver_version2 import *
 
 m = Model()
 m.BuildModel()

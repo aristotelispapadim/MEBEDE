@@ -49,10 +49,10 @@ class Node:
         self.isRouted = False
 
 class Route:
-    def __init__(self, dp, cap):
-        self.sequenceOfNodes = []
-        self.sequenceOfNodes.append(dp)
-        self.sequenceOfNodes.append(dp)
+    def __init__(self, nodes, cap):
+        self.sequenceOfNodes = nodes
+        #self.sequenceOfNodes.append(dp)
+        #self.sequenceOfNodes.append(dp)
         self.cost = 0
         self.capacity = cap
         self.load = 0

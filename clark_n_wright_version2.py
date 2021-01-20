@@ -73,7 +73,7 @@ for i in range(0,len(sort_dict)):
 
 
 roads = []
-roads.append(000)
+roads.append([0,0,0])
 for i in range (1,201):
     roads.append([0,i,0])
 
@@ -121,7 +121,7 @@ for i in range(1,201):
         #print(time_sum)
         if(mymax<time_sum):
             mymax=time_sum
-
+print(roads)
 #print(count)
 # print(mymax)
 
