@@ -15,7 +15,7 @@ class Model:
         random.seed(1)
         depot = Node(0, 0, 0, 50, 50)
         self.allNodes.append(depot)
-        self.capacity = 3000
+        self.capacity = 2400 #try different capacitys for better solutions
         totalCustomers = 200
         for i in range (0, totalCustomers):
             id = i + 1

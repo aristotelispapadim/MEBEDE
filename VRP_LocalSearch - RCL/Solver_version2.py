@@ -289,15 +289,32 @@ class Solver:
                     time_out =(25/60)
                 r.cost+=time_out
         maxofall = 0.0
+        count = 0
         for i in range(0, len(sol.routes)):
             rt = sol.routes[i]
             if(len(rt.sequenceOfNodes)>2):
+                count+=1
                 for j in range (0, len(rt.sequenceOfNodes)-1):
                     print(rt.sequenceOfNodes[j].ID, end=' ')
-                print(rt.cost)
+                print(' ')
                 if(rt.cost>maxofall):
                     maxofall=rt.cost
         print(maxofall)
+        #print(count)
+        with open("sol_8180132.txt","a") as f:
+            #f.write("%f\n"%maxofall)
+            x=str(maxofall)
+            f.write(x)
+            f.write("\n")
+            for i in range(0, len(sol.routes)):
+                rt = sol.routes[i]
+                if(len(rt.sequenceOfNodes)>2):
+                    for j in range (0, len(rt.sequenceOfNodes)-1):
+                        f.write("%d"%rt.sequenceOfNodes[j].ID)
+                        if(j!=len(rt.sequenceOfNodes)-2):
+                            f.write(',')
+                    f.write("\n")
+            f.close()
 
     def StoreBestRelocationMove(self, originRouteIndex, targetRouteIndex, originNodeIndex, targetNodeIndex, moveCost, originRtCostChange, targetRtCostChange, rm:RelocationMove):
         rm.originRoutePosition = originRouteIndex
