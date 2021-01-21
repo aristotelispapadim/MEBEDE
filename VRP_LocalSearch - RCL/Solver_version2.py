@@ -40,7 +40,7 @@ class Solver:
         self.rcl_size = 3
 
 
-    def Clark(self):
+    def Clark(self, itr):
         savings = [[0.0 for j in range(0, len(self.allNodes))] for k in range(0, len(self.allNodes))]
         for i in range(1, len(self.allNodes)):
             for j in range(1, len(self.allNodes)):
@@ -66,17 +66,17 @@ class Solver:
             roads.append([0,i,0])
 
         rcl = []
-        rcl.append(sort_dict[0])
-        rcl.append(sort_dict[1])
-        rcl.append(sort_dict[2])
-        random.seed(101)
+        rcl.append(0)
+        rcl.append(1)
+        rcl.append(2)
+        random.seed(itr)
         for w in range(3,len(sort_dict)+3):
 
             a = random.randint(0,len(rcl)-1)
-            myposition=rcl[a]
+            k=rcl[a]
             rcl.pop(a)
             if(w<len(sort_dict)):
-                rcl.append(sort_dict[w])
+                rcl.append(w)
 
             for i in range(1,201):
                 if nodes[k][0] in roads[i]:
@@ -131,7 +131,7 @@ class Solver:
 
     def solve(self):
         self.sol = Solution()
-        clark = self.Clark()
+        clark = self.Clark(104)
         max1 = -1
         for i in range(0, len(clark)):
             road = []
@@ -146,15 +146,14 @@ class Solver:
                     max1 = r.cost
                 r.load = self.Load(r)
                 self.sol.routes.append(r) #possible error
-        self.sol.maximum = max1       
-        for i in range(3): 
-            cc = self.sol.maximum
-            #print(i, 'Constr:', self.sol.maximum)
-            self.LocalSearch(0)
-            if self.overallBestSol == None or self.overallBestSol.maximum > self.sol.maximum:
-                self.overallBestSol = self.cloneSolution(self.sol)
-            #print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
-            #SolDrawer.draw(i, self.sol, self.allNodes)
+        self.sol.maximum = max1
+        cc = self.sol.maximum
+        #print(i, 'Constr:', self.sol.maximum)
+        self.LocalSearch(0)
+        if self.overallBestSol == None or self.overallBestSol.maximum > self.sol.maximum:
+            self.overallBestSol = self.cloneSolution(self.sol)
+        #print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
+        #SolDrawer.draw(i, self.sol, self.allNodes)
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
@@ -317,7 +316,6 @@ class Solver:
         print(maxofall)
         #print(count)
         with open("sol_8180132.txt","a") as f:
-            #f.write("%f\n"%maxofall)
             x=str(maxofall)
             f.write(x)
             f.write("\n")
