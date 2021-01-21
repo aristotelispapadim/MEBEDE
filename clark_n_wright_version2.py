@@ -98,16 +98,19 @@ for k in range(0,len(sort_dict)):
                 sum1 += all_nodes[roads[pos1][i]].demand
             for i in range(1,len(roads[pos2])-1):
                 sum2 += all_nodes[roads[pos2][i]].demand
-            if((sum1 + sum2) <= 2300):
+            if((sum1 + sum2) <= 2500):
                 roads[pos1].insert(len(roads[pos1])-1,n1) #προσθετω στην πρωτη διαδρομη την δευτερη διαδρομη
-                roads[pos2]=[0,0,0]  # σβηνω τη διαδρομη που εχω προσθεσει
+                if(len(roads[pos2])==3):
+                    roads[pos2]=[0,0,0]  # σβηνω τη διαδρομη που εχω προσθεσει
+                else:
+                    roads[pos2].remove(n1)
 
 count = 0
 mymax=-1
 for i in range(1,201):
     if(roads[i]!=[0,0,0]):
         count+=1
-        # print(roads[i])
+        print(roads[i])
         time_sum=0
         for j in range(0,len(roads[i])-2):
             if(all_nodes[roads[i][j+1]].type == 1):
@@ -121,9 +124,9 @@ for i in range(1,201):
         #print(time_sum)
         if(mymax<time_sum):
             mymax=time_sum
-print(roads)
+#print(roads)
 #print(count)
-# print(mymax)
+print(mymax)
 
 '''
 mylist = [[0,1,50,65,101,130,150,165,183],

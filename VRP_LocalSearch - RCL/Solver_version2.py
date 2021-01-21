@@ -85,9 +85,12 @@ class Solver:
                         sum1 += self.allNodes[roads[pos1][i]].demand
                     for i in range(1,len(roads[pos2])-1):
                         sum2 += self.allNodes[roads[pos2][i]].demand
-                    if((sum1 + sum2) <= 2300):
+                    if((sum1 + sum2) <= self.capacity):
                         roads[pos1].insert(len(roads[pos1])-1,n1) #προσθετω στην πρωτη διαδρομη την δευτερη διαδρομη
-                        roads[pos2]=[0,0,0]  # σβηνω τη διαδρομη που εχω προσθεσει
+                        if(len(roads[pos2])==3):
+                            roads[pos2]=[0,0,0]  # σβηνω τη διαδρομη που εχω προσθεσει
+                        else:
+                            roads[pos2].remove(n1)
 
         return roads
 
