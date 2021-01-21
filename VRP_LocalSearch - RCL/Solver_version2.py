@@ -1,5 +1,6 @@
 from VRP_Model import *
 #from SolutionDrawer import *
+import random
 
 class Solution:
     def __init__(self):
@@ -64,8 +65,19 @@ class Solver:
         for i in range (1,201):
             roads.append([0,i,0])
 
-        for k in range(0,len(sort_dict)):
-            
+        rcl = []
+        rcl.append(sort_dict[0])
+        rcl.append(sort_dict[1])
+        rcl.append(sort_dict[2])
+        random.seed(101)
+        for w in range(3,len(sort_dict)+3):
+
+            a = random.randint(0,len(rcl)-1)
+            myposition=rcl[a]
+            rcl.pop(a)
+            if(w<len(sort_dict)):
+                rcl.append(sort_dict[w])
+
             for i in range(1,201):
                 if nodes[k][0] in roads[i]:
                     pos1 = i
