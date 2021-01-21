@@ -131,16 +131,14 @@ class Solver:
                     max1 = r.cost
                 r.load = self.Load(r)
                 self.sol.routes.append(r) #possible error
-        for i in range(0, len(self.sol.routes)):
-            print(self.sol.routes[i].cost, end=',')
         self.sol.maximum = max1       
         for i in range(3): 
             cc = self.sol.maximum
-            print(i, 'Constr:', self.sol.maximum)
+            #print(i, 'Constr:', self.sol.maximum)
             self.LocalSearch(0)
             if self.overallBestSol == None or self.overallBestSol.maximum > self.sol.maximum:
                 self.overallBestSol = self.cloneSolution(self.sol)
-            print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
+            #print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
             #SolDrawer.draw(i, self.sol, self.allNodes)
 
         self.sol = self.overallBestSol
@@ -217,12 +215,30 @@ class Solver:
                         if rt1 != rt2:
                             if rt2.load + B.demand > rt2.capacity:
                                 continue
+                        if(C.ID != 0 and G.ID != 0):
+                            costAdded = self.distanceMatrix[A.ID][C.ID] + self.distanceMatrix[F.ID][B.ID] + self.distanceMatrix[B.ID][G.ID]
+                            costRemoved = self.distanceMatrix[A.ID][B.ID] + self.distanceMatrix[B.ID][C.ID] + self.distanceMatrix[F.ID][G.ID]
 
-                        costAdded = self.distanceMatrix[A.ID][C.ID] + self.distanceMatrix[F.ID][B.ID] + self.distanceMatrix[B.ID][G.ID]
-                        costRemoved = self.distanceMatrix[A.ID][B.ID] + self.distanceMatrix[B.ID][C.ID] + self.distanceMatrix[F.ID][G.ID]
+                            originRtCostChange = self.distanceMatrix[A.ID][C.ID] - self.distanceMatrix[A.ID][B.ID] - self.distanceMatrix[B.ID][C.ID]
+                            targetRtCostChange = self.distanceMatrix[F.ID][B.ID] + self.distanceMatrix[B.ID][G.ID] - self.distanceMatrix[F.ID][G.ID]
+                        elif(C.ID == 0 and G.ID != 0):
+                            costAdded = self.distanceMatrix[F.ID][B.ID] + self.distanceMatrix[B.ID][G.ID]
+                            costRemoved = self.distanceMatrix[A.ID][B.ID] + self.distanceMatrix[F.ID][G.ID]
 
-                        originRtCostChange = self.distanceMatrix[A.ID][C.ID] - self.distanceMatrix[A.ID][B.ID] - self.distanceMatrix[B.ID][C.ID]
-                        targetRtCostChange = self.distanceMatrix[F.ID][B.ID] + self.distanceMatrix[B.ID][G.ID] - self.distanceMatrix[F.ID][G.ID]
+                            originRtCostChange = (-1)*(self.distanceMatrix[A.ID][B.ID])
+                            targetRtCostChange = self.distanceMatrix[F.ID][B.ID] + self.distanceMatrix[B.ID][G.ID] - self.distanceMatrix[F.ID][G.ID]
+                        elif(G.ID ==0 and C.ID != 0):
+                            costAdded = self.distanceMatrix[A.ID][C.ID] + self.distanceMatrix[F.ID][B.ID]
+                            costRemoved = self.distanceMatrix[A.ID][B.ID] + self.distanceMatrix[B.ID][C.ID]
+
+                            originRtCostChange = self.distanceMatrix[A.ID][C.ID] - self.distanceMatrix[A.ID][B.ID] - self.distanceMatrix[B.ID][C.ID]
+                            targetRtCostChange = self.distanceMatrix[F.ID][B.ID]
+                        elif(G.ID ==0 and C.ID == 0):
+                            costAdded = self.distanceMatrix[F.ID][B.ID]
+                            costRemoved = self.distanceMatrix[A.ID][B.ID]
+
+                            originRtCostChange = (-1)*(self.distanceMatrix[A.ID][B.ID])
+                            targetRtCostChange = self.distanceMatrix[F.ID][B.ID]
 
                         moveCost = costAdded - costRemoved
 
@@ -263,11 +279,25 @@ class Solver:
 
     def ReportSolution(self, sol):
         for i in range(0, len(sol.routes)):
+            r = sol.routes[i]
+            for j in range (1, len(r.sequenceOfNodes)-1):
+                if(r.sequenceOfNodes[j].type == 1):
+                    time_out =(5/60)
+                elif(r.sequenceOfNodes[j].type == 2):
+                    time_out =(15/60)
+                elif(r.sequenceOfNodes[j].type == 3):
+                    time_out =(25/60)
+                r.cost+=time_out
+        maxofall = 0.0
+        for i in range(0, len(sol.routes)):
             rt = sol.routes[i]
-            for j in range (0, len(rt.sequenceOfNodes)):
-                print(rt.sequenceOfNodes[j].ID, end=' ')
-            print(rt.cost)
-        print (self.sol.cost)
+            if(len(rt.sequenceOfNodes)>2):
+                for j in range (0, len(rt.sequenceOfNodes)-1):
+                    print(rt.sequenceOfNodes[j].ID, end=' ')
+                print(rt.cost)
+                if(rt.cost>maxofall):
+                    maxofall=rt.cost
+        print(maxofall)
 
     def StoreBestRelocationMove(self, originRouteIndex, targetRouteIndex, originNodeIndex, targetNodeIndex, moveCost, originRtCostChange, targetRtCostChange, rm:RelocationMove):
         rm.originRoutePosition = originRouteIndex
@@ -282,7 +312,7 @@ class Solver:
         c = 0
         for i in range (0, len(sol.routes)):
             rt = sol.routes[i]
-            for j in range (0, len(rt.sequenceOfNodes) - 1):
+            for j in range (0, len(rt.sequenceOfNodes) - 2):
                 a = rt.sequenceOfNodes[j]
                 b = rt.sequenceOfNodes[j + 1]
                 c += self.distanceMatrix[a.ID][b.ID]
@@ -297,19 +327,21 @@ class Solver:
             rt: Route = self.sol.routes[r]
             rtCost = 0
             rtLoad = 0
-            for n in range (0 , len(rt.sequenceOfNodes) - 1):
+            for n in range (0 , len(rt.sequenceOfNodes) - 2):
                 A = rt.sequenceOfNodes[n]
                 B = rt.sequenceOfNodes[n + 1]
                 rtCost += self.distanceMatrix[A.ID][B.ID]
+            for n in range (0 , len(rt.sequenceOfNodes) - 1):
+                A = rt.sequenceOfNodes[n]
                 rtLoad += A.demand
             if abs(rtCost - rt.cost) > 0.0001:
                 print ('Route Cost problem')
+                print ('object cost', rt.cost)
+                print ('rtcost',rtCost)
+                for w in range (0 , len(rt.sequenceOfNodes)):
+                    print (rt.sequenceOfNodes[w].ID, end= ',')
             if rtLoad != rt.load:
                 print ('Route Load problem')
 
             totalSolCost += rt.cost
-
-        if abs(totalSolCost - self.sol.cost) > 0.0001:
-            print('Solution Cost problem')
-
     
