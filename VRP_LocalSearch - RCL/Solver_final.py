@@ -1,5 +1,5 @@
 from VRP_Model import *
-#from SolutionDrawer import *
+from SolutionDrawer import *
 import random
 
 class Solution:
@@ -127,16 +127,7 @@ class Solver:
     def Time(self, road):
         time_sum=0
         for j in range(0,len(road)-2):
-            """
-            if(self.allNodes[roads[i][j+1]].type == 1):
-                time_out =(5/60)
-            elif(self.allNodes[roads[i][j+1]].type == 2):
-                time_out =(15/60)
-            elif(self.allNodes[roads[i][j+1]].type == 3):
-                time_out =(25/60)
-            """
             time_sum+=self.distanceMatrix[road[j]][road[j+1]]
-            #time_sum+=time_out
         #print(time_sum)
         return time_sum
 
@@ -149,7 +140,7 @@ class Solver:
 
     def solve(self):
         self.sol = Solution()
-        clark = self.Clark(101)
+        clark = self.Clark(106)
         max1 = -1
         for i in range(0, len(clark)):
             road = []
@@ -172,11 +163,11 @@ class Solver:
         if self.overallBestSol == None or self.overallBestSol.maximum > self.sol.maximum:
             self.overallBestSol = self.cloneSolution(self.sol)
         #print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
-        #SolDrawer.draw(i, self.sol, self.allNodes)
+        SolDrawer.draw(i, self.sol, self.allNodes)
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
-        #SolDrawer.draw(10000, self.sol, self.allNodes)
+        SolDrawer.draw(10000, self.sol, self.allNodes)
         return self.sol
    
 
@@ -191,7 +182,7 @@ class Solver:
         while terminationCondition is False:
 
             self.InitializeOperators(rm, sm)
-            # SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
+            SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
 
             # Relocations
             if operator == 0:
