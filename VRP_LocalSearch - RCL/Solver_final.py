@@ -163,7 +163,7 @@ class Solver:
         if self.overallBestSol == None or self.overallBestSol.maximum > self.sol.maximum:
             self.overallBestSol = self.cloneSolution(self.sol)
         #print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
-        SolDrawer.draw(i, self.sol, self.allNodes)
+        #SolDrawer.draw(i, self.sol, self.allNodes)
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
@@ -182,7 +182,7 @@ class Solver:
         while terminationCondition is False:
 
             self.InitializeOperators(rm, sm)
-            SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
+            #SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
 
             # Relocations
             if operator == 0:
