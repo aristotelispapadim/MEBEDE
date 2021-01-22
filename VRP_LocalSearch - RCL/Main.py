@@ -1,5 +1,5 @@
 from VRP_Model import Model
-from Solver_version2 import *
+from solver_test import * #change solver file
 
 m = Model()
 m.BuildModel()
