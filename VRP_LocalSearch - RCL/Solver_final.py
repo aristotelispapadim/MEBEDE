@@ -1,5 +1,5 @@
 from VRP_Model import *
-from SolutionDrawer import *
+#from SolutionDrawer import *
 import random
 
 class Solution:
@@ -167,7 +167,7 @@ class Solver:
 
         self.sol = self.overallBestSol
         self.ReportSolution(self.sol)
-        SolDrawer.draw(10000, self.sol, self.allNodes)
+        #SolDrawer.draw(10000, self.sol, self.allNodes)
         return self.sol
    
 
