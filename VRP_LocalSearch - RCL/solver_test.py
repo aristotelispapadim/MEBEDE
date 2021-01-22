@@ -149,7 +149,7 @@ class Solver:
 
     def solve(self):
         self.sol = Solution()
-        clark = self.Clark(104)
+        clark = self.Clark(101)
         max1 = -1
         for i in range(0, len(clark)):
             road = []
@@ -168,6 +168,7 @@ class Solver:
         cc = self.sol.maximum
         #print(i, 'Constr:', self.sol.maximum)
         self.LocalSearch(1)
+        self.LocalSearch(0)
         if self.overallBestSol == None or self.overallBestSol.maximum > self.sol.maximum:
             self.overallBestSol = self.cloneSolution(self.sol)
         #print(i, 'Const: ', cc, ' LS:', self.sol.maximum, 'BestOverall: ', self.overallBestSol.cost)
@@ -189,7 +190,7 @@ class Solver:
 
         while terminationCondition is False:
 
-            self.InitializeOperators(rm)
+            self.InitializeOperators(rm, sm)
             # SolDrawer.draw(localSearchIterator, self.sol, self.allNodes)
 
             # Relocations
@@ -198,6 +199,14 @@ class Solver:
                 if rm.originRoutePosition is not None:
                     if rm.moveCost < 0:
                         self.ApplyRelocationMove(rm)
+                    else:
+                        terminationCondition = True
+            # Swaps
+            elif operator == 1:
+                self.FindBestSwapMove(sm)
+                if sm.positionOfFirstRoute is not None:
+                    if sm.moveCost < 0:
+                        self.ApplySwapMove(sm)
                     else:
                         terminationCondition = True
 
@@ -490,8 +499,9 @@ class Solver:
                 c += self.distanceMatrix[a.ID][b.ID]
         return c
 
-    def InitializeOperators(self, rm):
+    def InitializeOperators(self, rm, sm):
         rm.Initialize()
+        sm.Initialize()
 
     def TestSolution(self):
         totalSolCost = 0
